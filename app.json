@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "MoveSafe",
+    "slug": "MoveSafe-app",
+    "description": "Una aplicación móvil en donde los usuarios puedan estar informados de que zonas de Medellín pueden ser peligrosas o tenga un alto índice de delincuencia para la segunda mitad del 2022.",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.move.MoveSafeapp"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.move.MoveSafeapp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d1ace123-c0a7-47b3-9ee8-8726263ac758"
+      }
+    }
+  }
+}
