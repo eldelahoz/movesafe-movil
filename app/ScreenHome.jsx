@@ -18,7 +18,10 @@ const ScreenHome = ({ navigation }) => {
       <Text style={styles.titulo}>Bienvenidos a MoveSafe</Text>
       <StatusBar style="auto" />
 
-      <Image style={[styles.containerImage, styles.imgStyle]} />
+      <Image
+        style={[styles.containerImage, styles.imgStyle]}
+        source={require("../assets/bienvenida.png")}
+      />
 
       <TouchableOpacity
         style={styles.containerButton}
@@ -77,8 +80,7 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     marginTop: 30,
-    alignItems: "center",
-    justifyContent: "center",
+    resizeMode: "contain",
   },
   titulo: {
     fontSize: 30,
