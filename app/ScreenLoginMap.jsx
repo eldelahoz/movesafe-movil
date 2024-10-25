@@ -11,7 +11,6 @@ import {
   Pressable,
 } from "react-native";
 import { PlusCircleIcon } from "react-native-heroicons/solid";
-import { useFonts } from "expo-font";
 import CreateAlert from "../components/CreateAlert";
 import AlertaHurto from "../components/AlertaHurto";
 import AlertaHurtoCarro from "../components/AlertaHurtoCarro";
@@ -78,14 +77,6 @@ const ScreenLoginMap = () => {
     } catch (e) {
       console.log(e);
     }
-  }
-
-  const [loaded] = useFonts({
-    PlusJakartaSans: require("../assets/fonts/PlusJakartaSans-Regular.ttf"),
-  });
-
-  if (!loaded) {
-    return null;
   }
 
   return (
@@ -230,7 +221,7 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height / 5,
   },
   textModalClose: {
-    fontFamily: "PlusJakartaSans",
+    fontFamily: "custom-font",
     fontSize: 24,
     color: "#000",
   },

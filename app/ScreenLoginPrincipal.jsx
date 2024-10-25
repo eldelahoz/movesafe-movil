@@ -1,18 +1,16 @@
 import React from "react";
-import { View, StyleSheet, Image, TouchableOpacity, Text } from "react-native";
-import { useFonts } from "expo-font";
+import {
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+} from "react-native";
 
 const ScreenLoginPrincipal = ({ navigation }) => {
-  const [loaded] = useFonts({
-    PlusJakartaSans: require("../assets/fonts/PlusJakartaSans-Regular.ttf"),
-  });
-
-  if (!loaded) {
-    return null;
-  }
-
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity
         onPress={() => {
           navigation.navigate("ScreenLogin");
@@ -54,7 +52,7 @@ const ScreenLoginPrincipal = ({ navigation }) => {
           <Text style={styles.TextMap}>Reportes</Text>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -67,6 +65,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
     marginLeft: 30,
     marginRight: 30,
+    marginTop: 10,
   },
   containerImage: {
     alignSelf: "flex-end",
@@ -89,7 +88,7 @@ const styles = StyleSheet.create({
   Text: {
     textAlign: "center",
     fontWeight: "bold",
-    fontFamily: "PlusJakartaSans",
+    fontFamily: "custom-font",
     fontSize: 17,
     marginTop: 15,
   },
@@ -100,7 +99,7 @@ const styles = StyleSheet.create({
   },
   TextMap: {
     fontWeight: "bold",
-    fontFamily: "PlusJakartaSans",
+    fontFamily: "custom-font",
     fontSize: 17,
   },
   containerMap: {

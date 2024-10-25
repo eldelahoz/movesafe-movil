@@ -2,17 +2,8 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useFonts } from "expo-font";
 
 const ScreenHome = ({ navigation }) => {
-  const [loaded] = useFonts({
-    PlusJakartaSans: require("../assets/fonts/PlusJakartaSans-Regular.ttf"),
-  });
-
-  if (!loaded) {
-    return null;
-  }
-
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Bienvenidos a MoveSafe</Text>
@@ -86,11 +77,11 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: "#FF6816",
     fontWeight: "bold",
-    fontFamily: "PlusJakartaSans",
+    fontFamily: "custom-font",
   },
   Text: {
     color: "#FFFFFF",
-    fontFamily: "PlusJakartaSans",
+    fontFamily: "custom-font",
   },
 
   button: {

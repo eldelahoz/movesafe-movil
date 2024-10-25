@@ -7,14 +7,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { ArrowLongLeftIcon } from "react-native-heroicons/solid";
-import { useFonts } from "expo-font";
 
 const ScreenLogin = ({ navigation }) => {
-  const [loaded] = useFonts({
-    PlusJakartaSans: require("../assets/fonts/PlusJakartaSans-Regular.ttf"),
-  });
-
   const [getUser, setUser] = useState({
     correo: "",
     password: "",
@@ -60,19 +54,8 @@ const ScreenLogin = ({ navigation }) => {
     }
   }
 
-  if (!loaded) {
-    return null;
-  }
-
   return (
     <View style={styles.containerLogin}>
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("ScreenHome");
-        }}
-      >
-        <ArrowLongLeftIcon style={styles.ArrowLeftIcon} />
-      </TouchableOpacity>
       <View>
         <Text style={styles.titulo}>Inicio sesión</Text>
       </View>
@@ -133,14 +116,14 @@ const styles = StyleSheet.create({
   },
   titulo: {
     color: "#FF6816",
-    fontFamily: "PlusJakartaSans",
+    fontFamily: "custom-font",
     fontSize: 44,
     textAlign: "center",
     paddingBottom: 25,
   },
   titleCamps: {
     color: "#03071E",
-    fontFamily: "PlusJakartaSans",
+    fontFamily: "custom-font",
     paddingLeft: 10,
     paddingTop: 20,
   },
@@ -153,14 +136,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 12,
     textDecorationLine: "underline",
-    fontFamily: "PlusJakartaSans",
+    fontFamily: "custom-font",
     paddingTop: 10,
   },
   TextButton: {
     color: "#FFFFFF",
     textAlign: "center",
     fontSize: 15,
-    fontFamily: "PlusJakartaSans",
+    fontFamily: "custom-font",
   },
   containerButton: {
     alignItems: "center",
@@ -172,13 +155,9 @@ const styles = StyleSheet.create({
     width: 330,
     height: 50,
   },
-  ArrowLeftIcon: {
-    color: "#F9881F",
-    position: "relative",
-  },
   errorMessage: {
     fontSize: 14,
     color: "red",
-    fontFamily: "PlusJakartaSans",
+    fontFamily: "custom-font",
   },
 });
