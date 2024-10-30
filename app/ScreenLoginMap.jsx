@@ -57,6 +57,7 @@ const ScreenLoginMap = () => {
     try {
       var obj = region;
       setDestination({ latitude: obj.latitude, longitude: obj.longitude });
+      console.log({ latitude: obj.latitude, longitude: obj.longitude });
       if (!alertHurto.includes(region)) {
         setAlertHurto([...alertHurto, region]);
       }

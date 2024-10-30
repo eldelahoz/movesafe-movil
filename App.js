@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { StackNavigation } from "./components/StackNavigation";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import { AuthProvider } from "./components/security/AuthContext";
 
 const fetchFonts = () => {
   return Font.loadAsync({
@@ -34,9 +35,11 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <StackNavigation />
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer>
+        <StackNavigation />
+      </NavigationContainer>
+    </AuthProvider>
   );
 }
 

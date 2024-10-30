@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   View,
   StyleSheet,
@@ -7,13 +7,17 @@ import {
   Text,
   ScrollView,
 } from "react-native";
+import { AuthContext } from "../components/security/AuthContext";
 
 const ScreenLoginPrincipal = ({ navigation }) => {
+  const { decodedToken, logout } = useContext(AuthContext);
+  const fullName = decodedToken?.full_name || "User";
+  const avatarUrl = `https://avatar.vercel.sh/${fullName}`;
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate("ScreenLogin");
+          logout(navigation);
         }}
       >
         <Image
@@ -25,9 +29,12 @@ const ScreenLoginPrincipal = ({ navigation }) => {
       <View>
         <Image
           style={[styles.containerPerfil, styles.perfi]}
-          source={require("../assets/perfil.png")}
+          source={{
+            // uri: `https://avatar.vercel.sh/${decodedToken?.full_name}`,
+            uri: avatarUrl,
+          }}
         />
-        <Text style={styles.Text}>Name User</Text>
+        <Text style={styles.Text}>{decodedToken?.full_name}</Text>
       </View>
       <View style={styles.containerOpction}>
         <View style={styles.containerMap}>
@@ -77,12 +84,15 @@ const styles = StyleSheet.create({
   },
   containerPerfil: {
     alignSelf: "center",
-    borderRadius: 44,
     marginTop: 20,
   },
   perfi: {
     width: 150,
-    height: 180,
+    height: 150,
+    borderRadius: 150 / 2,
+    overflow: "hidden",
+    borderWidth: 3,
+    borderColor: "#ED474A",
     resizeMode: "contain",
   },
   Text: {

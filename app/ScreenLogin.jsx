@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -7,9 +7,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { getUser } from "../helpers/user";
+import { AuthContext } from "../components/security/AuthContext";
+import { LoadingIndicator } from "../components/ui/LoadingIndicator";
 
 const ScreenLogin = ({ navigation }) => {
-  const [getUser, setUser] = useState({
+  const [getUsuario, setUsuario] = useState({
     correo: "",
     password: "",
   });
@@ -19,6 +22,10 @@ const ScreenLogin = ({ navigation }) => {
     ErrorStatus: false,
   });
 
+  const [loading, setLoading] = useState(false);
+
+  const { login } = useContext(AuthContext);
+
   function validateData(email, password) {
     if (!email || !password) {
       setErrorMessage({
@@ -27,30 +34,23 @@ const ScreenLogin = ({ navigation }) => {
         ErrorStatus: true,
       });
     } else {
-      // async function run() {
-      //   await fetch("https://api-movesafe.vercel.app/api/checkUser", {
-      //     method: "POST",
-      //     headers: {
-      //       Accept: "application/json",
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({ correo: email, password: password }),
-      //   })
-      //     .then((res) => res.json())
-      //     .then((res) => {
-      //       if (res.succes) {
-      //         navigation.navigate("ScreenPrincipal");
-      //       } else {
-      //         setErrorMessage({
-      //           ...getError,
-      //           TextInputValue: "* Correo o contraseña no son correctos.",
-      //           ErrorStatus: true,
-      //         });
-      //       }
-      //     });
-      // }
-      // run();
-      navigation.navigate("ScreenPrincipal");
+      async function run() {
+        setLoading(true);
+        const response = await getUser(getUsuario.correo, getUsuario.password);
+        setLoading(false);
+        console.log(response);
+        if (response.status === 200) {
+          const token = response.data.access_token;
+          await login(token, navigation, setErrorMessage);
+        } else {
+          setErrorMessage({
+            ...getError,
+            TextInputValue: "* Correo o contraseña no son correctos.",
+            ErrorStatus: true,
+          });
+        }
+      }
+      run();
     }
   }
 
@@ -67,7 +67,13 @@ const ScreenLogin = ({ navigation }) => {
           keyboardType="email-address"
           style={styles.TextInput}
           placeholder="nombre@correo.com"
-          onChangeText={(text) => setUser({ ...getUser, correo: text })}
+          onChangeText={(text) => {
+            setUsuario({ ...getUsuario, correo: text });
+            setErrorMessage({
+              ...getError,
+              ErrorStatus: false,
+            });
+          }}
         ></TextInput>
       </View>
 
@@ -77,7 +83,13 @@ const ScreenLogin = ({ navigation }) => {
           secureTextEntry={true}
           style={styles.TextInput}
           placeholder="***********"
-          onChangeText={(text) => setUser({ ...getUser, password: text })}
+          onChangeText={(text) => {
+            setUsuario({ ...getUsuario, password: text });
+            setErrorMessage({
+              ...getError,
+              ErrorStatus: false,
+            });
+          }}
         ></TextInput>
       </View>
 
@@ -87,19 +99,23 @@ const ScreenLogin = ({ navigation }) => {
         </View>
       ) : null}
 
-      <TouchableOpacity
-        style={styles.containerButton}
-        onPress={() => validateData(getUser.correo, getUser.password)}
-      >
-        <LinearGradient
-          colors={["#F9881F", "#ED474A"]}
-          start={{ x: 0, y: 1 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.button}
+      {loading ? (
+        <LoadingIndicator />
+      ) : (
+        <TouchableOpacity
+          style={styles.containerButton}
+          onPress={() => validateData(getUsuario.correo, getUsuario.password)}
         >
-          <Text style={styles.TextButton}>Inicio sesion</Text>
-        </LinearGradient>
-      </TouchableOpacity>
+          <LinearGradient
+            colors={["#F9881F", "#ED474A"]}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.button}
+          >
+            <Text style={styles.TextButton}>Inicio sesion</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
