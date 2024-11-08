@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import MapView, { Marker, Circle } from "react-native-maps";
 import {
   View,
@@ -8,8 +9,10 @@ import {
   Modal,
   Text,
   Image,
+  TextInput,
   Pressable,
 } from "react-native";
+import { ArrowLongLeftIcon } from "react-native-heroicons/solid";
 import { PlusCircleIcon } from "react-native-heroicons/solid";
 import CreateAlert from "../components/CreateAlert";
 import AlertaHurto from "../components/AlertaHurto";
@@ -80,8 +83,29 @@ const ScreenLoginMap = () => {
     }
   }
 
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
+      <View style={styles.containerRoute}>
+        <TouchableOpacity
+          style={styles.containerArrow}
+          onPress={() => navigation.goBack()}
+        >
+          <ArrowLongLeftIcon size={30} style={styles.ArrowLeftIcon} />
+        </TouchableOpacity>
+        <TextInput
+          autoCapitalize="none"
+          keyboardType="text"
+          style={styles.TextInput}
+          placeholder="Ruta Inicio"
+        ></TextInput>
+        <TextInput
+          autoCapitalize="none"
+          keyboardType="text"
+          style={styles.TextInput}
+          placeholder="Ruta Fin"
+        ></TextInput>
+      </View>
       {/* Crear Alerta */}
       <Modal
         animationType="slide"
@@ -175,8 +199,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
   },
   map: {
     width: Dimensions.get("window").width,
@@ -188,7 +210,6 @@ const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
   },
   modalView: {
     margin: 30,
@@ -237,5 +258,24 @@ const styles = StyleSheet.create({
   imgAlert: {
     width: Dimensions.get("window").width / 5,
     height: Dimensions.get("window").width / 5,
+  },
+  containerArrow: {},
+  ArrowLeftIcon: {
+    color: "#F9881F",
+  },
+  containerRoute: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  TextInput: {
+    borderColor: "#F9881F",
+    borderWidth: 1,
+    borderRadius: 20,
+    padding: 10,
+    marginLeft: 10,
+    flex: 1,
   },
 });
