@@ -163,7 +163,7 @@ const ScreenRegister = ({ navigation }) => {
           <Text
             style={{ color: "#FF6816" }}
             onPress={() => {
-              // navigation.navigate("ScreenTermino");
+              navigation.navigate("ScreenTermino");
             }}
           >
             Condiciones del servicio y la Politica de privacidad.

@@ -3,42 +3,14 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ScreenHome from "../app/ScreenHome";
 import ScreenLogin from "../app/ScreenLogin";
 import ScreenRegister from "../app/ScreenRegister";
+import ScreenTermino from "../app/ScreenTermino";
 import ScreenLoginPrincipal from "../app/ScreenLoginPrincipal";
 import ScreenLoginMap from "../app/ScreenLoginMap";
 import { AuthContext } from "./security/AuthContext";
 import { LoadingIndicator } from "./ui/LoadingIndicator";
+import Constants from "expo-constants";
 
-const AuthStack = createNativeStackNavigator();
-const MainStack = createNativeStackNavigator();
-
-const AuthStackScreen = () => (
-  <AuthStack.Navigator
-    screenOptions={{
-      headerShown: false,
-      contentStyle: {
-        backgroundColor: "#fff",
-      },
-    }}
-  >
-    <AuthStack.Screen name="ScreenHome" component={ScreenHome} />
-    <AuthStack.Screen name="ScreenLogin" component={ScreenLogin} />
-    <AuthStack.Screen name="ScreenRegister" component={ScreenRegister} />
-  </AuthStack.Navigator>
-);
-
-const MainStackScreen = () => (
-  <MainStack.Navigator
-    screenOptions={{
-      headerShown: false,
-      contentStyle: {
-        backgroundColor: "#fff",
-      },
-    }}
-  >
-    <MainStack.Screen name="ScreenPrincipal" component={ScreenLoginPrincipal} />
-    <MainStack.Screen name="ScreenLoginMap" component={ScreenLoginMap} />
-  </MainStack.Navigator>
-);
+const Stack = createNativeStackNavigator();
 
 export const StackNavigation = () => {
   const { token } = useContext(AuthContext);
@@ -46,7 +18,6 @@ export const StackNavigation = () => {
 
   useEffect(() => {
     const checkAuthStatus = async () => {
-      // Simula un tiempo de carga para verificar el token
       setTimeout(() => {
         setIsLoading(false);
       }, 1000);
@@ -58,5 +29,32 @@ export const StackNavigation = () => {
     return <LoadingIndicator />;
   }
 
-  return token ? <MainStackScreen /> : <AuthStackScreen />;
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        contentStyle: {
+          marginTop: Constants.statusBarHeight,
+          backgroundColor: "#fff",
+        },
+      }}
+    >
+      {token == null ? (
+        <>
+          <Stack.Screen name="ScreenHome" component={ScreenHome} />
+          <Stack.Screen name="ScreenLogin" component={ScreenLogin} />
+          <Stack.Screen name="ScreenRegister" component={ScreenRegister} />
+          <Stack.Screen name="ScreenTermino" component={ScreenTermino} />
+        </>
+      ) : (
+        <>
+          <Stack.Screen
+            name="ScreenPrincipal"
+            component={ScreenLoginPrincipal}
+          />
+          <Stack.Screen name="ScreenLoginMap" component={ScreenLoginMap} />
+        </>
+      )}
+    </Stack.Navigator>
+  );
 };

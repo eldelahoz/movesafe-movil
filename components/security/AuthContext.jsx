@@ -19,12 +19,11 @@ export const AuthProvider = ({ children }) => {
     loadToken();
   }, []);
 
-  const login = async (token, navigate, setErrorMessage) => {
+  const login = async (token, setErrorMessage) => {
     await AsyncStorage.setItem("userToken", token);
     const decodedToken = jwtDecode(token);
     console.log(decodedToken);
     if (decodedToken.status) {
-      navigate.navigate("ScreenPrincipal");
       setToken(token);
       setDecodedToken(decodedToken);
     } else {
@@ -35,11 +34,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async (navigate) => {
+  const logout = async () => {
     await AsyncStorage.removeItem("userToken");
     setToken(null);
     setDecodedToken(null);
-    navigate.navigate("ScreenLogin");
   };
 
   return (

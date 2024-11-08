@@ -38,10 +38,9 @@ const ScreenLogin = ({ navigation }) => {
         setLoading(true);
         const response = await getUser(getUsuario.correo, getUsuario.password);
         setLoading(false);
-        console.log(response);
         if (response.status === 200) {
           const token = response.data.access_token;
-          await login(token, navigation, setErrorMessage);
+          await login(token, setErrorMessage);
         } else {
           setErrorMessage({
             ...getError,
