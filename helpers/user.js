@@ -17,9 +17,8 @@ const postUser = async (body) => {
     const resp = await apiRequest("user", "POST", body);
     return { status: 201, data: resp.data };
   } catch (error) {
-    return { status: 500, data: error };
+    return { status: 500, data: "Error usuario posiblemente creado" };
   }
 };
 
 export { getUser, postUser };
-

@@ -21,7 +21,6 @@ const apiRequest = async (endpoint, method = "GET", body = null) => {
 
     return { status: response.status, data };
   } catch (error) {
-    console.error("Error en la solicitud:", error);
     throw error;
   }
 };
