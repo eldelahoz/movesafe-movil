@@ -2,24 +2,30 @@ import React, { useState } from "react";
 import {
   View,
   Text,
+  StyleSheet,
   TextInput,
   TouchableOpacity,
-  Alert,
-  StyleSheet,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+  Alert,
 } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { LinearGradient } from "expo-linear-gradient";
+import { postUser } from "../helpers/user";
 
 const ScreenRegister = ({ navigation }) => {
   const [isSelected, setSelection] = useState(false);
 
   const [newUser, setNewUser] = useState({
-    nombre_completo: "",
-    correo: "",
-    numero_celular: "",
+    first_name: "",
+    last_name: "",
+    phone: "",
+    email: "",
+    role_id: 2,
     password: "",
-    confirmar_password: "",
   });
 
   const [getError, setErrorMessage] = useState({
@@ -27,15 +33,16 @@ const ScreenRegister = ({ navigation }) => {
     ErrorStatus: false,
   });
 
-  /*const expresiones = {
-    coreeo: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
-  }*/
+  const expresiones = {
+    coreeo: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+  };
 
-  const submitRegister = () => {
+  const submitRegister = async () => {
     if (
-      newUser.nombre_completo === "" ||
-      newUser.correo === "" ||
-      newUser.numero_celular === "" ||
+      newUser.first_name === "" ||
+      newUser.last_name === "" ||
+      newUser.email === "" ||
+      newUser.phone === "" ||
       newUser.password === "" ||
       newUser.confirmar_password === ""
     ) {
@@ -51,141 +58,162 @@ const ScreenRegister = ({ navigation }) => {
         ErrorStatus: true,
       });
     } else {
-      async function run() {
-        await fetch("https://api-movesafe.vercel.app/api/user", {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            nombre_completo: newUser.nombre_completo,
-            correo: newUser.correo,
-            numero_celular: newUser.numero_celular,
-            password: newUser.password,
-            confirmar_password: newUser.confirmar_password,
-          }),
-        })
-          .then((res) => res.json())
-          .then((res) => {
-            if (res.register) {
-              Alert.alert(
-                "REGISTRO DE USUARIO",
-                "Usuario registrado exitosamente",
-                [
-                  {
-                    Text: "ACEPTAR",
-                    cancelable: false,
-                    onPress: () => {
-                      navigation.goBack();
-                    },
-                  },
-                ]
-              );
-            } else {
-              setErrorMessage({
-                ...getError,
-                TextInputValue: "El usuario ya se encuentra registrado",
-                ErrorStatus: true,
-              });
-            }
-          });
+      try {
+        const { confirmar_password, ...userToSend } = newUser;
+        const response = await postUser(userToSend);
+        if (response.status === 201) {
+          Alert.alert("Registro exitoso", "Usuario registrado con éxito", [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.navigate("ScreenLogin");
+              },
+            },
+          ]);
+        } else {
+          Alert.alert("Error", "Ha ocurrido un error al registrar el usuario", [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.navigate("ScreenRegister");
+              },
+            },
+          ]);
+        }
+      } catch (error) {
+        if (error instanceof SyntaxError) {
+          Alert.alert("Error", "Error de análisis JSON: " + error.message, [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.navigate("ScreenRegister");
+              },
+            },
+          ]);
+        } else {
+          Alert.alert("Error", "Ha ocurrido un error: " + error.message, [
+            {
+              text: "OK",
+              onPress: () => {
+                navigation.navigate("ScreenRegister");
+              },
+            },
+          ]);
+        }
       }
-      run();
     }
   };
 
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.container}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
     >
-      <Text style={styles.title}>Registro</Text>
-      <Text style={styles.titleCamps}>Nombre completo</Text>
-      <TextInput
-        style={styles.input}
-        onChangeText={(text) =>
-          setNewUser({ ...newUser, nombre_completo: text })
-        }
-      ></TextInput>
-      <Text style={styles.titleCamps}>Correo</Text>
-      <TextInput
-        autoCapitalize="none"
-        keyboardType="email-address"
-        style={styles.input}
-        onChangeText={(text) => setNewUser({ ...newUser, correo: text })}
-      ></TextInput>
-      <Text style={styles.titleCamps}>Numero celular</Text>
-      <TextInput
-        keyboardType="number-pad"
-        style={styles.input}
-        onChangeText={(text) =>
-          setNewUser({ ...newUser, numero_celular: text })
-        }
-      ></TextInput>
-      <Text style={styles.titleCamps}>Contraseña</Text>
-      <TextInput
-        secureTextEntry={true}
-        style={styles.input}
-        onChangeText={(text) => setNewUser({ ...newUser, password: text })}
-      ></TextInput>
-      <Text style={styles.titleCamps}>Confirmar contraseña</Text>
-      <TextInput
-        secureTextEntry={true}
-        style={styles.input}
-        onChangeText={(text) =>
-          setNewUser({ ...newUser, confirmar_password: md5(text) })
-        }
-      ></TextInput>
-
-      {getError.ErrorStatus == true ? (
-        <View>
-          <Text style={styles.errorMessage}>{getError.TextInputValue}</Text>
-        </View>
-      ) : null}
-
-      <View style={{ flexDirection: "row" }}>
-        <View style={{ paddingTop: 24 }}>
-          <BouncyCheckbox
-            size={20}
-            fillColor="#FF6816"
-            iconStyle={{ borderRadius: 0 }}
-            innerIconStyle={{ borderRadius: 2, borderColor: "black" }}
-            onPress={() => {
-              setSelection(!isSelected);
-            }}
-          />
-        </View>
-
-        <Text style={styles.titleTerms}>
-          Acepto las{" "}
-          <Text
-            style={{ color: "#FF6816" }}
-            onPress={() => {
-              navigation.navigate("ScreenTermino");
-            }}
-          >
-            Condiciones del servicio y la Politica de privacidad.
-          </Text>
-        </Text>
-      </View>
-      {}
-      <TouchableOpacity
-        style={styles.containerButton}
-        onPress={submitRegister}
-        disabled={!isSelected}
-      >
-        <LinearGradient
-          colors={["#F9881F", "#ED474A"]}
-          start={{ x: 0, y: 1 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.button}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ flexGrow: 1 }}
         >
-          <Text style={styles.TextButton}>Registrar</Text>
-        </LinearGradient>
-      </TouchableOpacity>
-    </ScrollView>
+          <View style={styles.container}>
+            <Text style={styles.title}>Registro</Text>
+            <Text style={styles.titleCamps}>Nombre</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) =>
+                setNewUser({ ...newUser, first_name: text })
+              }
+            ></TextInput>
+            <Text style={styles.titleCamps}>Apellido</Text>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) =>
+                setNewUser({ ...newUser, last_name: text })
+              }
+            ></TextInput>
+            <Text style={styles.titleCamps}>Correo</Text>
+            <TextInput
+              autoCapitalize="none"
+              keyboardType="email-address"
+              style={styles.input}
+              onChangeText={(text) => setNewUser({ ...newUser, email: text })}
+            ></TextInput>
+            <Text style={styles.titleCamps}>Numero celular</Text>
+            <TextInput
+              keyboardType="number-pad"
+              style={styles.input}
+              onChangeText={(text) => setNewUser({ ...newUser, phone: text })}
+            ></TextInput>
+            <Text style={styles.titleCamps}>Contraseña</Text>
+            <TextInput
+              secureTextEntry={true}
+              style={styles.input}
+              onChangeText={(text) =>
+                setNewUser({ ...newUser, password: text })
+              }
+            ></TextInput>
+            <Text style={styles.titleCamps}>Confirmar contraseña</Text>
+            <TextInput
+              secureTextEntry={true}
+              style={styles.input}
+              onChangeText={(text) =>
+                setNewUser({ ...newUser, confirmar_password: text })
+              }
+            ></TextInput>
+
+            {getError.ErrorStatus == true ? (
+              <View>
+                <Text style={styles.errorMessage}>
+                  {getError.TextInputValue}
+                </Text>
+              </View>
+            ) : null}
+
+            <View style={{ flexDirection: "row" }}>
+              <View style={{ paddingTop: 24 }}>
+                <BouncyCheckbox
+                  size={20}
+                  fillColor="#FF6816"
+                  iconStyle={{ borderRadius: 0 }}
+                  innerIconStyle={{ borderRadius: 2, borderColor: "black" }}
+                  onPress={() => {
+                    setSelection(!isSelected);
+                  }}
+                />
+              </View>
+
+              <Text style={styles.titleTerms}>
+                Acepto las{" "}
+                <Text
+                  style={{ color: "#FF6816" }}
+                  onPress={() => {
+                    navigation.navigate("ScreenTermino");
+                  }}
+                >
+                  Condiciones del servicio y la Politica de privacidad.
+                </Text>
+              </Text>
+            </View>
+            {}
+            <TouchableOpacity
+              style={styles.containerButton}
+              onPress={submitRegister}
+              disabled={!isSelected}
+            >
+              <LinearGradient
+                colors={["#F9881F", "#ED474A"]}
+                start={{ x: 0, y: 1 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.button}
+              >
+                <Text style={styles.TextButton}>Registrar</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

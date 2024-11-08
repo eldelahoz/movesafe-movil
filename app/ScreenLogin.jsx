@@ -5,6 +5,11 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { getUser } from "../helpers/user";
@@ -54,68 +59,82 @@ const ScreenLogin = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.containerLogin}>
-      <View>
-        <Text style={styles.titulo}>Inicio sesión</Text>
-      </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={styles.containerLogin}>
+            <View>
+              <Text style={styles.titulo}>Inicio sesión</Text>
+            </View>
 
-      <View>
-        <Text style={styles.titleCamps}>Ingresar correo</Text>
-        <TextInput
-          autoCapitalize="none"
-          keyboardType="email-address"
-          style={styles.TextInput}
-          placeholder="nombre@correo.com"
-          onChangeText={(text) => {
-            setUsuario({ ...getUsuario, correo: text });
-            setErrorMessage({
-              ...getError,
-              ErrorStatus: false,
-            });
-          }}
-        ></TextInput>
-      </View>
+            <View>
+              <Text style={styles.titleCamps}>Ingresar correo</Text>
+              <TextInput
+                autoCapitalize="none"
+                keyboardType="email-address"
+                style={styles.TextInput}
+                placeholder="nombre@correo.com"
+                onChangeText={(text) => {
+                  setUsuario({ ...getUsuario, correo: text });
+                  setErrorMessage({
+                    ...getError,
+                    ErrorStatus: false,
+                  });
+                }}
+              ></TextInput>
+            </View>
 
-      <View>
-        <Text style={styles.titleCamps}>Contraseña</Text>
-        <TextInput
-          secureTextEntry={true}
-          style={styles.TextInput}
-          placeholder="***********"
-          onChangeText={(text) => {
-            setUsuario({ ...getUsuario, password: text });
-            setErrorMessage({
-              ...getError,
-              ErrorStatus: false,
-            });
-          }}
-        ></TextInput>
-      </View>
+            <View>
+              <Text style={styles.titleCamps}>Contraseña</Text>
+              <TextInput
+                secureTextEntry={true}
+                style={styles.TextInput}
+                placeholder="***********"
+                onChangeText={(text) => {
+                  setUsuario({ ...getUsuario, password: text });
+                  setErrorMessage({
+                    ...getError,
+                    ErrorStatus: false,
+                  });
+                }}
+              ></TextInput>
+            </View>
 
-      {getError.ErrorStatus == true ? (
-        <View>
-          <Text style={styles.errorMessage}>{getError.TextInputValue}</Text>
-        </View>
-      ) : null}
+            {getError.ErrorStatus == true ? (
+              <View>
+                <Text style={styles.errorMessage}>
+                  {getError.TextInputValue}
+                </Text>
+              </View>
+            ) : null}
 
-      {loading ? (
-        <LoadingIndicator />
-      ) : (
-        <TouchableOpacity
-          style={styles.containerButton}
-          onPress={() => validateData(getUsuario.correo, getUsuario.password)}
-        >
-          <LinearGradient
-            colors={["#F9881F", "#ED474A"]}
-            start={{ x: 0, y: 1 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.button}
-          >
-            <Text style={styles.TextButton}>Inicio sesion</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      )}
-    </View>
+            {loading ? (
+              <LoadingIndicator />
+            ) : (
+              <TouchableOpacity
+                style={styles.containerButton}
+                onPress={() =>
+                  validateData(getUsuario.correo, getUsuario.password)
+                }
+              >
+                <LinearGradient
+                  colors={["#F9881F", "#ED474A"]}
+                  start={{ x: 0, y: 1 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.button}
+                >
+                  <Text style={styles.TextButton}>Inicio sesion</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            )}
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
