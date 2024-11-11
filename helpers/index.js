@@ -1,7 +1,9 @@
-const apiBaseUrl = `http://192.168.1.14:8000/`;
+import { API_URL } from "@env";
+
+// const apiBaseUrl = `${API_URL}`;
 
 const apiRequest = async (endpoint, method = "GET", body = null) => {
-  const url = `${apiBaseUrl}${endpoint}`;
+  const url = `${API_URL}${endpoint}`;
   const headers = {
     "Content-Type": "application/json",
   };

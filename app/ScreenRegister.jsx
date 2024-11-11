@@ -15,9 +15,11 @@ import {
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { LinearGradient } from "expo-linear-gradient";
 import { postUser } from "../helpers/user";
+import { LoadingIndicator } from "../components/ui/LoadingIndicator";
 
 const ScreenRegister = ({ navigation }) => {
   const [isSelected, setSelection] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [newUser, setNewUser] = useState({
     first_name: "",
@@ -59,9 +61,11 @@ const ScreenRegister = ({ navigation }) => {
       });
     } else {
       try {
+        setLoading(true);
         const { confirmar_password, ...userToSend } = newUser;
         const response = await postUser(userToSend);
         if (response.status === 201) {
+          setLoading(false);
           Alert.alert("Registro exitoso", "Usuario registrado con éxito", [
             {
               text: "OK",
@@ -71,6 +75,7 @@ const ScreenRegister = ({ navigation }) => {
             },
           ]);
         } else {
+          setLoading(false);
           Alert.alert("Error", "Ha ocurrido un error al registrar el usuario", [
             {
               text: "OK",
@@ -81,6 +86,7 @@ const ScreenRegister = ({ navigation }) => {
           ]);
         }
       } catch (error) {
+        setLoading(false);
         if (error instanceof SyntaxError) {
           Alert.alert("Error", "Error de análisis JSON: " + error.message, [
             {
@@ -202,12 +208,18 @@ const ScreenRegister = ({ navigation }) => {
               disabled={!isSelected}
             >
               <LinearGradient
-                colors={["#F9881F", "#ED474A"]}
+                colors={
+                  isSelected ? ["#F9881F", "#ED474A"] : ["#A9A9A9", "#A9A9A9"]
+                }
                 start={{ x: 0, y: 1 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.button}
               >
-                <Text style={styles.TextButton}>Registrar</Text>
+                {loading ? (
+                  <LoadingIndicator />
+                ) : (
+                  <Text style={styles.TextButton}>Registrar</Text>
+                )}
               </LinearGradient>
             </TouchableOpacity>
           </View>
