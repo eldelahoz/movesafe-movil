@@ -16,7 +16,7 @@ const AlertaHurto = (props) => {
           latitude: props.destination.latitude,
           longitude: props.destination.longitude,
         }}
-        radius={280}
+        radius={150}
         strokeColor="yellow"
         fillColor="rgba(255,255,0,0.2)"
       />
@@ -26,8 +26,8 @@ const AlertaHurto = (props) => {
 
 const styles = StyleSheet.create({
   imgAlert: {
-    width: Dimensions.get("window").width / 6,
-    height: Dimensions.get("window").width / 6,
+    width: Dimensions.get("window").width / 10,
+    height: Dimensions.get("window").width / 10,
   },
 });
 

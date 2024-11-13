@@ -51,13 +51,13 @@ const ScreenLoginPrincipal = ({ navigation }) => {
           <Text style={styles.TextMap}>Ver el mapa</Text>
         </View>
 
-        <View style={styles.containerRep}>
+        {/* <View style={styles.containerRep}>
           <Image
             style={styles.map}
             source={require("../assets/formulario-de-llenado.png")}
           />
           <Text style={styles.TextMap}>Reportes</Text>
-        </View>
+        </View> */}
       </View>
     </ScrollView>
   );
