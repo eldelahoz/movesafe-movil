@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
-import MapView, { Polyline } from "react-native-maps";
+import MapView, { Geojson } from "react-native-maps";
 import {
   View,
   StyleSheet,
@@ -11,6 +11,7 @@ import {
   Image,
   TextInput,
   Pressable,
+  Keyboard,
 } from "react-native";
 import {
   ArrowLongLeftIcon,
@@ -27,6 +28,7 @@ import {
   getRutaPosibleSegura,
 } from "../helpers/mapa";
 import { AuthContext } from "../components/security/AuthContext";
+import { LoadingIndicator } from "../components/ui/LoadingIndicator";
 
 const ScreenLoginMap = () => {
   const { decodedToken, logout } = useContext(AuthContext);
@@ -36,9 +38,18 @@ const ScreenLoginMap = () => {
   const [nombreBarrio, setNombreBarrio] = useState("");
   const [wrongNombre, setWrongNombre] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessageRuta, setErrorMessageRuta] = useState({
+    errorActivo: false,
+    mensaje: "",
+  });
   const [direccionOrigen, setDireccionOrigen] = useState("");
   const [direccionDestino, setDireccionDestino] = useState("");
-  const [routeCoordinates, setRouteCoordinates] = useState([]);
+  const [advertencia, setAdvertencia] = useState({
+    advertencia: false,
+    mensaje: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [geojson, setGeojson] = useState(null);
   const [origin, setOrigin] = React.useState({
     latitude: 6.2797592,
     longitude: -75.5822967,
@@ -92,9 +103,35 @@ const ScreenLoginMap = () => {
   };
 
   const getDireccionCoordenadas = async () => {
+    setGeojson(null);
+    setAdvertencia({ advertencia: false, mensaje: "" });
+    if (direccionOrigen === "" || direccionDestino === "") {
+      setErrorMessageRuta({
+        errorActivo: true,
+        mensaje: "Ambos campos son requeridos",
+      });
+      return;
+    }
+    Keyboard.dismiss();
+    setLoading(true);
     const respCoordenadasOrigen = await getDireccionCoord(direccionOrigen);
+    if (respCoordenadasOrigen.data.GeoSJson.length === 0) {
+      setErrorMessageRuta({
+        errorActivo: true,
+        mensaje: "Direccion de origen no encontrada",
+      });
+      setLoading(false);
+      return;
+    }
     const respCoordenadasDestino = await getDireccionCoord(direccionDestino);
-
+    if (respCoordenadasDestino.data.GeoSJson.length === 0) {
+      setErrorMessageRuta({
+        errorActivo: true,
+        mensaje: "Direccion de destino no encontrada",
+      });
+      setLoading(false);
+      return;
+    }
     if (
       respCoordenadasOrigen.status === 200 &&
       respCoordenadasDestino.status === 200
@@ -119,16 +156,16 @@ const ScreenLoginMap = () => {
         };
 
         const respRuta = await getRutaPosibleSegura(dataRuta);
+        setLoading(false);
         if (respRuta.status === 200) {
           const rutaGeoJson = respRuta.data.geojson;
-
-          const coordinates = rutaGeoJson.features[0].geometry.coordinates
-            .filter((point) => point && point.length >= 2)
-            .map((point) => ({
-              latitude: point[1],
-              longitude: point[0],
-            }));
-          setRouteCoordinates(coordinates);
+          if (respRuta.data.caution) {
+            setAdvertencia({
+              errorActivo: true,
+              mensaje: respRuta.data.caution,
+            });
+          }
+          setGeojson(rutaGeoJson);
 
           if (mapRef.current) {
             const region = {
@@ -162,7 +199,10 @@ const ScreenLoginMap = () => {
           keyboardType="text"
           style={styles.TextInput}
           placeholder="Ruta Inicio"
-          onChangeText={(text) => setDireccionOrigen(text)}
+          onChangeText={(text) => {
+            setDireccionOrigen(text);
+            setErrorMessageRuta({ errorActivo: false, mensaje: "" });
+          }}
           value={direccionOrigen}
         ></TextInput>
         <TextInput
@@ -170,7 +210,10 @@ const ScreenLoginMap = () => {
           keyboardType="text"
           style={styles.TextInput}
           placeholder="Ruta Fin"
-          onChangeText={(text) => setDireccionDestino(text)}
+          onChangeText={(text) => {
+            setDireccionDestino(text);
+            setErrorMessageRuta({ errorActivo: false, mensaje: "" });
+          }}
           value={direccionDestino}
         ></TextInput>
         <TouchableOpacity style={styles.containerArrow}>
@@ -180,6 +223,37 @@ const ScreenLoginMap = () => {
             onPress={() => getDireccionCoordenadas()}
           />
         </TouchableOpacity>
+      </View>
+      <View>
+        {errorMessageRuta.errorActivo && (
+          <Text
+            style={{
+              fontSize: 15,
+              marginLeft: 10,
+              textAlign: "center",
+              color: "red",
+            }}
+          >
+            {errorMessageRuta.mensaje}
+          </Text>
+        )}
+        {loading ? (
+          <View style={{ height: "4%" }}>
+            <LoadingIndicator />
+          </View>
+        ) : null}
+        {advertencia.errorActivo && (
+          <Text
+            style={{
+              fontSize: 15,
+              marginLeft: 10,
+              textAlign: "center",
+              color: "red",
+            }}
+          >
+            {advertencia.mensaje}
+          </Text>
+        )}
       </View>
       {/* Crear Alerta */}
       <Modal
@@ -248,12 +322,8 @@ const ScreenLoginMap = () => {
             }}
           />
         ))}
-        {routeCoordinates.length > 0 && (
-          <Polyline
-            coordinates={routeCoordinates}
-            strokeColor="#FF0000" // color de la línea
-            strokeWidth={3} // grosor de la línea
-          />
+        {geojson && (
+          <Geojson geojson={geojson} strokeColor="#FF0000" strokeWidth={3} />
         )}
       </MapView>
       {/* Boton para ver crear alerta */}
